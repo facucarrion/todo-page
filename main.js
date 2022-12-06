@@ -5,11 +5,15 @@ const main = document.querySelector('main');
 
 // * TOOLS AND SECONDARY FUNCTIONS
 
+const localVerify = () => {
+  if (!localStorage.getItem('tasks')) localStorage.setItem('tasks', JSON.stringify([]));
+}
+
 const getId = (arr) => {
   let maxId = 0;
   let currentId = 0;
   if (!localStorage.getItem('tasks')) return 1;
-  arr.forEach (note => {
+  arr.forEach(note => {
     currentId = note.id;
     if (currentId > maxId) maxId = currentId;
   })
@@ -18,13 +22,16 @@ const getId = (arr) => {
 
 const isChecked = (check) => {
   if (check === true) return 'checked';
-  return ""
+  else return
+}
+
+const modInput = () => {
+
 }
 
 // * MAIN FUNCTIONS
 
 const createNotes = (body) => {
-  if (!localStorage.getItem('tasks')) localStorage.setItem('tasks', JSON.stringify([]));
   let arr = JSON.parse(localStorage.getItem('tasks'));
   let newTask = {
     id: getId(arr),
@@ -41,35 +48,45 @@ const createNotes = (body) => {
 }
 
 const readNotes = (arr) => {
-  arr.forEach(el => {
-    let {id, body, checked} = el;
-    let newNote = document.createElement('div');
-    
-    newNote.classList.add('main__note');
-    newNote.innerHTML += `
-      <input 
-        value="${body}"
-        class="main__text"
-        readonly
-      />
-      <span class='main__actions'>
-        <i
-          class='main__edit bx bxs-edit-alt'
-          onclick=''>
-        </i>
-        <input
-          type="checkbox"
-          class='main__check'
-          ${isChecked(checked)}
-        />
-        <i
-          class='main__delete bx bx-x'
-          onclick='deleteNotes(${id})'>
-        </i>
-      </span>
-    `
-    main.appendChild(newNote);
-  })
+  localVerify()
+  if (arr) {
+    arr.forEach(el => {
+      let { id, body, checked } = el;
+      let newNote = document.createElement('div');
+
+      newNote.classList.add('main__note');
+      newNote.innerHTML += `
+          <input 
+            value="${body}"
+            class="main__text"
+            readonly
+          />
+          <span class='main__actions'>
+            <i
+              class='main__edit bx bxs-edit-alt'
+              onclick=''>
+            </i>
+            <i
+              class='main__save bx bxs-save'
+              style='display: none'
+              onclick=''>
+            </i>
+            <input
+              type="checkbox"
+              class='main__check'
+              onclick="updateNotes('checked', ${id}, ${!checked})"
+              ${isChecked(checked)}
+            />
+            <i
+              class='main__delete bx bx-x'
+              onclick='deleteNotes(${id})'>
+            </i>
+          </span>
+        `
+      main.appendChild(newNote);
+
+    })
+  }
 }
 
 const updateNotes = (prop, id, newValue = true) => {
@@ -80,6 +97,11 @@ const updateNotes = (prop, id, newValue = true) => {
     if (el.id === id) el[prop] = newValue;
     newArr.push(el);
   })
+
+  localStorage.setItem('tasks', JSON.stringify(newArr))
+
+  main.innerHTML = "";
+  readNotes(JSON.parse(localStorage.getItem('tasks')));
 }
 
 const deleteNotes = (id) => {
@@ -102,5 +124,6 @@ form.addEventListener('submit', (e) => {
 });
 
 readNotes(JSON.parse(localStorage.getItem('tasks')));
+console.log(JSON.parse(localStorage.getItem('tasks')));
 
 // http://localhost:5173/
