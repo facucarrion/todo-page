@@ -2,7 +2,6 @@
 const form = document.querySelector('.header__form');
 const newTaskInput = document.getElementById('new-task');
 const main = document.querySelector('main');
-const editButton = document.querySelectorAll('.main__edit')
 
 // * TOOLS AND SECONDARY FUNCTIONS
 
