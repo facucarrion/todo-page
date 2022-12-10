@@ -90,6 +90,7 @@ header i {
 	font-size: 2.5em;
 	color: var(--light);
 	transition: opacity .4s ease;
+	cursor: pointer;
 }
 
 .header__submit:hover {
@@ -142,6 +143,10 @@ header i {
 	padding: 2px 5px;
 }
 
+.main__text--active {
+	border-bottom: 1.5px solid var(--light);
+}
+
 .main__actions {
 	display: flex;
 	align-items: center;
@@ -165,6 +170,10 @@ header i {
 	font-size: 1.5em;
 	cursor: pointer;
 	margin-right: 5px;
+}
+
+.main__displaynone {
+	display: none;
 }
 
 /* FOOTER */

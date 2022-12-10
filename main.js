@@ -1,7 +1,8 @@
 // * DOM ELEMENTS
 const form = document.querySelector('.header__form');
-const newTaskInput = document.querySelector('#new-task');
+const newTaskInput = document.getElementById('new-task');
 const main = document.querySelector('main');
+const editButton = document.querySelectorAll('.main__edit')
 
 // * TOOLS AND SECONDARY FUNCTIONS
 
@@ -25,8 +26,35 @@ const isChecked = (check) => {
   else return
 }
 
-const modInput = () => {
+const isStatus = (status) => {
+  if (status === true) return;
+  else return 'readonly'
+}
 
+const modInput = (prop, id, newValue = true) => {
+  updateNotes(prop, id, newValue);
+
+  let inputToMod = document.getElementById(`input-${id}`);
+  let editButton = document.getElementById(`edit-${id}`);
+  let saveButton = document.getElementById(`save-${id}`);
+
+  inputToMod.focus();
+  inputToMod.classList.add('main__text--active');
+
+  editButton.classList.add('main__displaynone');
+  saveButton.classList.remove('main__displaynone');
+}
+
+const confirmInput = (id) => {
+  let inputToMod = document.getElementById(`input-${id}`);
+  let editButton = document.getElementById(`edit-${id}`);
+  let saveButton = document.getElementById(`save-${id}`);
+
+  inputToMod.classList.remove('main__text--active');
+  editButton.classList.remove('main__displaynone');
+  saveButton.classList.add('main__displaynone');
+  updateNotes('body', id, inputToMod.value)
+  updateNotes('status', id, false)
 }
 
 // * MAIN FUNCTIONS
@@ -36,9 +64,10 @@ const createNotes = (body) => {
   let newTask = {
     id: getId(arr),
     body: body,
-    checked: false
+    checked: false,
+    status: false
   };
-  // console.log(newTask);
+
   arr.push(newTask);
   localStorage.setItem('tasks', JSON.stringify(arr));
 
@@ -51,41 +80,44 @@ const readNotes = (arr) => {
   localVerify()
   if (arr) {
     arr.forEach(el => {
-      let { id, body, checked } = el;
+      let { id, body, checked, status } = el;
       let newNote = document.createElement('div');
 
       newNote.classList.add('main__note');
       newNote.innerHTML += `
-          <input 
-            value="${body}"
-            class="main__text"
-            readonly
+        <input 
+          value="${body}"
+          class="main__text"
+          id="input-${id}"
+          ${isStatus(status)}
+        />
+        <span class='main__actions'>
+          <i
+            class='main__edit bx bxs-edit-alt'
+            id='edit-${id}'
+            onclick="modInput('status', ${id}, ${!status})">
+          </i>
+          <i
+            class='main__edit main__displaynone bx bxs-save'
+            id="save-${id}"
+            onclick='confirmInput(${id})'>
+          </i>
+          <input
+            type="checkbox"
+            class='main__check'
+            onclick="updateNotes('checked', ${id}, ${!checked})"
+            ${isChecked(checked)}
           />
-          <span class='main__actions'>
-            <i
-              class='main__edit bx bxs-edit-alt'
-              onclick=''>
-            </i>
-            <i
-              class='main__save bx bxs-save'
-              style='display: none'
-              onclick=''>
-            </i>
-            <input
-              type="checkbox"
-              class='main__check'
-              onclick="updateNotes('checked', ${id}, ${!checked})"
-              ${isChecked(checked)}
-            />
-            <i
-              class='main__delete bx bx-x'
-              onclick='deleteNotes(${id})'>
-            </i>
-          </span>
-        `
+          <i
+            class='main__delete bx bx-x'
+            onclick='deleteNotes(${id})'>
+          </i>
+        </span>
+      `
       main.appendChild(newNote);
 
     })
+
   }
 }
 
@@ -114,6 +146,10 @@ const deleteNotes = (id) => {
   readNotes(JSON.parse(localStorage.getItem('tasks')));
 }
 
+// * INITIATORS
+
+readNotes(JSON.parse(localStorage.getItem('tasks')));
+
 // * EVENTS
 
 form.addEventListener('submit', (e) => {
@@ -123,7 +159,5 @@ form.addEventListener('submit', (e) => {
   form.reset();
 });
 
-readNotes(JSON.parse(localStorage.getItem('tasks')));
-console.log(JSON.parse(localStorage.getItem('tasks')));
 
 // http://localhost:5173/
